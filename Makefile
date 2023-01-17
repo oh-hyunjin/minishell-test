@@ -10,12 +10,12 @@ LIBFT = ft
 NAME = minishell
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -g3 -Wall -Wextra -Werror
 RM = rm -f
 AR = ar -rcs
 
 $(SRCS_DIR)/%.o : %.c
-	$(CC) -g3 $(CFLAGS) -c $<  -I$(LIBFT_DIR) -I$(PARSING_DIR)
+	$(CC) $(CFLAGS) -c $<  -I$(LIBFT_DIR) -I$(PARSING_DIR)
 
 
 all : $(NAME)
