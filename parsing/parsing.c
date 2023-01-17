@@ -2,7 +2,7 @@
 #include <string.h> //split용
 #include <stdlib.h>
 
-
+/*
 char	**ft_error(char **tmp, size_t i)
 {
 	size_t	n;
@@ -91,6 +91,22 @@ char	**ft_split(char const *s, char c)
 	tmp[i] = NULL;
 	return (tmp);
 }
+*/
+int	ft_indexof(char *s, int c)
+{
+	int	i;
+
+	i = 0;
+	while (s[i])
+	{
+		if (s[i] == (char)c)
+			return (i);
+		i++;
+	}
+	if (c == '\0')
+		return (i);
+	return (-1);
+}
 
 
 t_lex *new_lexical(char *str)
@@ -147,28 +163,100 @@ void display(t_lex *lexical)
     }
 }
 
-void parsing(char *str)
+int check_str(char c)
 {
-    t_lex *lex;
+	if (c == ' ')
+		return BLANK;
+	else if (c == '\'')
+		return SMALL_QUOTE;
+	else if (c == '\"')
+		return BIG_QUOTE;
+	return 0;
+}
 
-    char **tmp;
-    tmp = ft_split(str, ' ');
-    if(!tmp)
-        return ;
+void init_flag(t_flag *flag)
+{
+	flag->big_quote = 0;
+	flag->small_quote = 0;
+}
 
-    int i = 0;
-    while (tmp[i])
-    {
-        //if (tmp[i] == '\'' || tmp[i] == '\"')
-        t_lex *new = new_lexical(tmp[i]);
-        add_back(&lex, new);
+void	parsing(char *str)
+{
+	t_lex	*lex;
+	int		i;
+	int		start;
+	int		end;
+	t_flag	flag;
+
+	init_flag(&flag);
+
+	int j = ft_strlen(str);
+	i = 0;
+	start = 0;
+	while (i < j)
+	{
+		if (check_str(str[i]) == BLANK)
+		{
+			printf("=== > %c\n", str[i]);	
+			end = i;
+			if (start != end) //공백 다음에 공백이 나오는 경우 대비
+			{
+				printf("start : %d %c\n", start, str[start]);
+				add_back(&lex, new_lexical(ft_substr(str, start, end)));
+					printf("blank : %s\n\n" , ft_substr(str, start, end)); 
+				
+				if (str[i + 1] != '\0') //segfault 뜰 경우 대비
+					start = i + 1;
+			}
+		}
+		else if (check_str(str[i]) == SMALL_QUOTE)
+		{
+			start = i + 1;
+			end = ft_indexof(str + i + 1, SMALL_QUOTE);
+			if (str[i + 1] != '\0' && end != -1)
+			{
+				add_back(&lex, new_lexical(ft_substr(str, start, end)));
+				printf("if : %s\n" , ft_substr(str, start, end));
+				printf("start : %d %c, end :%d %c\n\n", start,str[start], end, str[end]);
+				start += end  + 1 ;
+			    i += end + 1; 
+			}
+			else
+			{
+				flag.small_quote = -1;
+			}
+		}
+		else if (check_str(str[i]) == BIG_QUOTE)
+		{
+			start = i + 1;
+			end = ft_indexof(str + i + 1, BIG_QUOTE);
+			if (str[i + 1] != '\0' && end != -1)
+			{
+				add_back(&lex, new_lexical(ft_substr(str, start, end)));
+				start = end - 1;
+				i += end + 1; 
+			}
+			else
+				flag.big_quote = -1;
+			
+		}
+		printf("\n");
         i++;
     }
+	
+	if (flag.small_quote == -1 || flag.big_quote == -1)
+		printf("quote error\n");
+
     display(lex);
 }
 
 int main()
 {
-    char *str = "echo hello | a > b";
+    char *str = "echo 'hello' 'world' test ";
     parsing(str);
+
+
+	printf("\nstr1\n");	
+	//char *str1 = "'hello' ";
+	//parsing(str1);
 }
