@@ -11,9 +11,12 @@
 enum e_lexical
 {
     PIPE = 0,
-    REDIRECTION = 1,
-    WORD = 2,
-    NULL_POINT = 3
+    IN_REDIRECT = 1,
+    OUT_REDIRECT = 2,
+    HEREDOC = 3,
+    DOUBLE_OUT_REDIRECT = 4,
+    WORD = 5,
+    NULL_POINT = 6
 };
 
 typedef struct s_lex

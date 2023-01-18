@@ -121,14 +121,25 @@ t_lex *new_lexical(char *str)
     if (*str == '|')
         new->type = PIPE;
     //else if ((*str == '<') || (*str == '<<') || (*str == '>') || (*str == '>>'))
-    else if ((*str == '<') || (*str == '>') )
-        new->type = REDIRECTION;
-    else if (*str == '\0')
-        new->type = NULL_POINT;
-    else
-        new->type = WORD;
-    
-    return (new);
+    else if (*str == '<')
+	{
+		if (*(str + 1) != '\0' && *(str + 1) == '<')
+			new->type = HEREDOC;
+		else
+			new->type = IN_REDIRECT;
+	}
+	else if (*str == '>')
+	{
+		if (*(str + 1) != '\0' && *(str + 1) == '>')
+			new->type = DOUBLE_OUT_REDIRECT;
+		else
+			new->type = OUT_REDIRECT;
+	}
+	else if (*str == '\0')
+		new->type = NULL_POINT;
+	else
+		new->type = WORD;
+	return (new);
 }
 
 void add_back(t_lex **lst, t_lex *new)
@@ -173,6 +184,10 @@ int check_str(char c)
 		return SMALL_QUOTE;
 	else if (c == '\"')
 		return BIG_QUOTE;
+	else if (c == '<')
+		return IN_REDIRECT;
+	else if (c == '>')
+		return OUT_REDIRECT;
 	return 0;
 }
 
@@ -234,6 +249,42 @@ void	parsing(char *str)
 				flag.big_quote = -1;
 			
 		}
+		else if (check_str(str[i]) == IN_REDIRECT)
+		{
+			if (start != i)
+			{
+				end = ft_indexof(str + start, '<');
+				add_back(&lex, new_lexical(ft_substr(str, start, end)));
+				start = end;
+			}
+			if (str[i + 1] != '\0' && str[i + 1] == '<')
+			{
+				add_back(&lex, new_lexical(ft_substr(str, i, 2)));
+				start++;
+				i++;
+			}
+			else
+				add_back(&lex, new_lexical(ft_substr(str, i, 1)));
+			start++;
+		}
+		else if (check_str(str[i]) == OUT_REDIRECT)
+		{
+			if (start != i)
+			{
+				end = ft_indexof(str + start, '>');
+				add_back(&lex, new_lexical(ft_substr(str, start, end)));
+				start = end;
+			}
+			if (str[i + 1] != '\0' && str[i + 1] == '>')
+			{
+				add_back(&lex, new_lexical(ft_substr(str, i, 2)));
+				start++;
+				i++;
+			}
+			else
+				add_back(&lex, new_lexical(ft_substr(str, i, 1)));
+			start++;
+		}
 		i++;
 	}
 	
@@ -245,6 +296,6 @@ void	parsing(char *str)
 
 int main()
 {
-	char *str = "\n hi test ";
+	char *str = "ls ><<a test ";
 	parsing(str);
 }
