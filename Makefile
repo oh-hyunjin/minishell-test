@@ -1,5 +1,5 @@
 PARSING_DIR = ./parsing
-PARSING_NAME =  parsing.c 
+PARSING_NAME =  lexical.c syntax.c
 PARSING =  ${addprefix $(PARSING_DIR)/, $(PARSING_NAME)}
 PARSING_OBJS = $(PARSING:.c=.o)
 

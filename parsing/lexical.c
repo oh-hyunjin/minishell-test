@@ -113,15 +113,16 @@ t_lex *new_lexical(char *str)
 {
     t_lex *new;
 
-    new = (t_lex *)malloc(sizeof(t_lex));
-    if (!new)
-        return NULL;
-    new->next = NULL;
-    new->str = str;
-    if (*str == '|')
-        new->type = PIPE;
-    //else if ((*str == '<') || (*str == '<<') || (*str == '>') || (*str == '>>'))
-    else if (*str == '<')
+	new = (t_lex *)malloc(sizeof(t_lex));
+	if (!new)
+		return NULL;
+	new->next = NULL;
+	new->left = NULL;
+	new->right = NULL;
+	new->str = str;
+	if (*str == '|')
+		new->type = PIPE;
+	else if (*str == '<')
 	{
 		if (*(str + 1) != '\0' && *(str + 1) == '<')
 			new->type = HEREDOC;

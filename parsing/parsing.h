@@ -21,17 +21,19 @@ enum e_lexical
 
 typedef struct s_lex
 {
-    char *str;
-    int type;
-    struct s_lex *next;
-}   t_lex;
+	char *str;
+	int type;
+	struct s_lex *next;
+	struct s_lex *left;
+	struct s_lex *right;
+}	t_lex;
 
-typedef struct s_tree
-{
-	int data;
-	struct s_tree *left;
-	struct s_tree *right;
-}	t_tree;
+// typedef struct s_tree
+// {
+// 	int data;
+// 	struct s_tree *left;
+// 	struct s_tree *right;
+// }	t_tree;
 
 typedef struct s_flag
 {
