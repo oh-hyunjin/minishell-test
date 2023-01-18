@@ -155,12 +155,14 @@ void add_back(t_lex **lst, t_lex *new)
 
 void display(t_lex *lexical)
 {
-    t_lex *tmp = lexical;
-    while(tmp->next)
-    {
-        printf("%s : %d\n", tmp->str, tmp->type);
-        tmp = tmp->next;
-    }
+	t_lex *tmp;
+	
+	tmp = lexical;
+	while(tmp)
+	{
+		printf("%s : %d\n", tmp->str, tmp->type);
+		tmp = tmp->next;
+	}
 }
 
 int check_str(char c)
@@ -189,25 +191,21 @@ void	parsing(char *str)
 	t_flag	flag;
 
 	init_flag(&flag);
-
-	int j = ft_strlen(str);
 	i = 0;
 	start = 0;
-	while (i < j)
+	while (str[i])
 	{
 		if (check_str(str[i]) == BLANK)
 		{
-			printf("=== > %c\n", str[i]);	
-			end = i;
-			if (start != end) //공백 다음에 공백이 나오는 경우 대비
+			end = ft_indexof(str + start, BLANK);
+			if (str[start] != ' ') //공백 다음에 공백이 나오는 경우 대비
 			{
-				printf("start : %d %c\n", start, str[start]);
 				add_back(&lex, new_lexical(ft_substr(str, start, end)));
-					printf("blank : %s\n\n" , ft_substr(str, start, end)); 
-				
 				if (str[i + 1] != '\0') //segfault 뜰 경우 대비
 					start = i + 1;
 			}
+			else
+				start++;
 		}
 		else if (check_str(str[i]) == SMALL_QUOTE)
 		{
@@ -216,15 +214,11 @@ void	parsing(char *str)
 			if (str[i + 1] != '\0' && end != -1)
 			{
 				add_back(&lex, new_lexical(ft_substr(str, start, end)));
-				printf("if : %s\n" , ft_substr(str, start, end));
-				printf("start : %d %c, end :%d %c\n\n", start,str[start], end, str[end]);
 				start += end  + 1 ;
-			    i += end + 1; 
+				i += end + 1;
 			}
 			else
-			{
 				flag.small_quote = -1;
-			}
 		}
 		else if (check_str(str[i]) == BIG_QUOTE)
 		{
@@ -234,29 +228,23 @@ void	parsing(char *str)
 			{
 				add_back(&lex, new_lexical(ft_substr(str, start, end)));
 				start = end - 1;
-				i += end + 1; 
+				i += end + 1;
 			}
 			else
 				flag.big_quote = -1;
 			
 		}
-		printf("\n");
-        i++;
-    }
+		i++;
+	}
 	
 	if (flag.small_quote == -1 || flag.big_quote == -1)
 		printf("quote error\n");
 
-    display(lex);
+	display(lex);
 }
 
 int main()
 {
-    char *str = "echo 'hello' 'world' test ";
-    parsing(str);
-
-
-	printf("\nstr1\n");	
-	//char *str1 = "'hello' ";
-	//parsing(str1);
+	char *str = "\n hi test ";
+	parsing(str);
 }
