@@ -19,14 +19,15 @@ enum e_lexical
     NULL_POINT = 6
 };
 
-typedef struct s_lex
+typedef struct s_tree
 {
 	char *str;
 	int type;
-	struct s_lex *next;
-	struct s_lex *left;
-	struct s_lex *right;
-}	t_lex;
+	struct s_tree *prev;
+	struct s_tree *next;
+	struct s_tree *left;
+	struct s_tree *right;
+}	t_tree;
 
 // typedef struct s_tree
 // {
@@ -44,5 +45,6 @@ typedef struct s_flag
 #include <unistd.h>
 
 int main();
+t_tree *syntax(t_tree *start, t_tree *end);
 
 #endif
